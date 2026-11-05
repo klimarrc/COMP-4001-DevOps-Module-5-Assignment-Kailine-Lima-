@@ -1,0 +1,31 @@
+version: '3.8' # specify the Compose file version/support
+
+# services block: list every containerized service
+services:
+  backend:
+    build:
+      context: ./banking-backend  # add context
+      dockerfile: Dockerfile      # add Docker file
+    ports:
+      - "5000:5000"               # add port mapping
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/bank_app
+      - SECRET_KEY=supersecretkey
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+
+  studentportfolio:
+    build: ./studentportfolio
+    ports:
+      - "3000:80"                 # add port mapping
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
